@@ -89,3 +89,145 @@
   max-height: none !important;
   display: block;
 }
+
+
+/* ===== UI FIX: patient checklist modal ===== */
+.checklist-modal{
+  position:fixed !important;
+  left:50% !important;
+  right:auto !important;
+  top:50% !important;
+  bottom:auto !important;
+  transform:translate(-50%,-50%) !important;
+  width:min(680px,92vw) !important;
+  max-height:88vh;
+  overflow:auto;
+  padding:28px !important;
+  border-radius:12px;
+  box-shadow:0 24px 70px rgba(0,0,0,.22);
+  z-index:10000;
+}
+
+.checklist-modal h3{
+  margin:0 48px 22px 0;
+}
+
+.modal-close,
+.popover-close{
+  appearance:none;
+  border:0;
+  background:transparent;
+  color:var(--ink,#16211d);
+  font-size:34px;
+  line-height:1;
+  width:40px;
+  height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  border-radius:999px;
+}
+
+.modal-close:hover,
+.popover-close:hover{
+  background:rgba(15,81,63,.08);
+}
+
+.modal-close{
+  position:absolute;
+  top:18px;
+  right:18px;
+}
+
+.checklist{
+  display:grid;
+  gap:0;
+}
+
+.checklist-row{
+  display:grid;
+  grid-template-columns:28px 1fr;
+  align-items:center;
+  gap:16px;
+  padding:16px 0;
+  border-bottom:1px solid rgba(22,33,29,.12);
+  cursor:pointer;
+}
+
+.checklist-row:last-child{
+  border-bottom:0;
+}
+
+.checklist-row input[type="checkbox"]{
+  width:22px;
+  height:22px;
+  margin:0;
+  justify-self:start;
+}
+
+.checklist-text{
+  text-align:left;
+  line-height:1.45;
+}
+
+.checklist-print{
+  width:100%;
+  margin-top:22px;
+}
+
+/* ===== UI FIX: contact popover ===== */
+#contactPopover{
+  position:fixed;
+  right:24px;
+  top:92px;
+  width:min(330px,calc(100vw - 32px));
+  padding:24px !important;
+}
+
+#contactPopover .popover-close{
+  position:absolute;
+  top:10px;
+  right:10px;
+}
+
+#contactPopover > strong{
+  display:block;
+  padding-right:44px;
+  margin-bottom:12px;
+}
+
+@media (max-width:700px){
+  .checklist-modal{
+    width:94vw !important;
+    padding:22px !important;
+  }
+  #contactPopover{
+    right:12px;
+    top:78px;
+  }
+}
+
+/* print only checklist when requested */
+@media print{
+  body *{
+    visibility:hidden !important;
+  }
+  #checklistModal,
+  #checklistModal *{
+    visibility:visible !important;
+  }
+  #checklistModal{
+    position:absolute !important;
+    left:0 !important;
+    top:0 !important;
+    transform:none !important;
+    width:100% !important;
+    max-height:none !important;
+    box-shadow:none !important;
+  }
+  .modal-close,
+  .checklist-print{
+    display:none !important;
+  }
+}

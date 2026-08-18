@@ -24,4 +24,32 @@
 <section id="reviews" class="section"><div class="container"><div class="section-head"><div><span class="eyebrow">Відгуки</span><h2>Досвід пацієнтів</h2></div></div><div id="reviewsGrid" class="reviews-grid"></div><div class="card" style="margin-top:22px"><h3>Залишити відгук</h3><form id="reviewForm" class="form-grid" style="margin-top:18px"><input id="rname" placeholder="Імʼя" required><select id="rating"><option value="5">5 ★</option><option value="4">4 ★</option><option value="3">3 ★</option><option value="2">2 ★</option><option value="1">1 ★</option></select><textarea id="rtext" placeholder="Ваш відгук" required style="grid-column:1/-1"></textarea><button class="btn" type="submit">Надіслати на модерацію</button></form></div></div></section>
 <section id="appointment" class="section dark-section"><div class="container contact-grid"><div><span class="eyebrow" style="color:#b9d9cd">Запис</span><h2>Заявка на консультацію</h2><p class="muted">Вкажіть зручний час для дзвінка.</p></div><form id="appointmentForm" class="card form-grid"><input id="aname" placeholder="Імʼя" required><input id="aphone" placeholder="Телефон" required><select id="callbackTime"><option value="">Зручний час дзвінка</option><option>09:00–12:00</option><option>12:00–15:00</option><option>15:00–18:00</option><option>18:00–20:00</option></select><select id="direction"><option value="">Напрямок</option><option>Хірургія гриж</option><option>Лапароскопічна хірургія</option><option>Проктологія</option><option>Пластична хірургія</option></select><textarea id="amessage" placeholder="Коротко опишіть питання" style="grid-column:1/-1"></textarea><button class="btn" type="submit">Надіслати заявку</button><span id="formMsg"></span></form></div></section>
 <section id="contacts" class="section"><div class="container contact-grid"><div class="contact-card"><span class="eyebrow">Контакти</span><h2>Київ, Поділ</h2><p>15 міська клінічна лікарня<br>м. Київ, Подільський р-н<br>вул. Іллінська 3/7<br>метро «Контрактова площа»</p><p><a class="btn" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=%D0%86%D0%BB%D0%BB%D1%96%D0%BD%D1%81%D1%8C%D0%BA%D0%B0+3%2F7%2C+%D0%9A%D0%B8%D1%97%D0%B2">Прокласти маршрут</a></p></div><iframe class="map-frame" loading="lazy" src="https://www.google.com/maps?q=%D0%86%D0%BB%D0%BB%D1%96%D0%BD%D1%81%D1%8C%D0%BA%D0%B0%203%2F7,%20%D0%9A%D0%B8%D1%97%D0%B2&output=embed"></iframe></div></section>
-</main><div class="contact-popover" id="contactPopover"><strong>Звʼязок</strong><a href="tel:+380973994532">📞 +380 97 399 45 32</a><a href="viber://chat?number=%2B380973994532">Viber</a><a target="_blank" href="https://wa.me/380973994532">WhatsApp</a><a target="_blank" href="https://www.instagram.com/makovetskiyoleksandr_?igsh=MTBsYXAzcGF2bHNsdA==&igsi=MTBsYXAzcGF2bHNsdA==">Instagram</a><a target="_blank" href="https://www.facebook.com/share/1ChEV5K8jn/?mibextid=wwXIfr">Facebook</a></div><div class="footer"><div class="container footer-grid"><div><div class="brand">dr.makovetskyi.com.ua</div><p>Лікар-хірург Маковецький Олександр Миколайович</p><small>Інформація на сайті не замінює консультацію лікаря.</small></div><div><b>Швидкі посилання</b><p><a href="#services">Послуги</a><br><a href="#patient">Важливо пацієнту</a><br><a href="#blog">Блог</a><br><a href="#reviews">Відгуки</a></p></div><div><b>Звʼязок</b><p><a href="tel:+380973994532">+380 97 399 45 32</a><br><a href="#contacts">Адреса та маршрут</a></p></div></div></div><div id="quizModal" class="contact-popover" style="left:50%;right:auto;transform:translateX(-50%);width:min(520px,92vw)"><button class="btn ghost" onclick="closeQuiz()">Закрити</button><h3 style="margin-top:14px">Схоже на грижу?</h3><div id="quizBody"></div></div><div id="checklistModal" class="contact-popover" style="left:50%;right:auto;transform:translateX(-50%);width:min(620px,92vw)"><button class="btn ghost" onclick="closeChecklist()">Закрити</button><h3 style="margin-top:14px">Чек-лист підготовки</h3><div class="checklist" id="checklistBody"></div><button class="btn" onclick="window.print()" style="margin-top:18px">Друкувати</button></div><script src="app.js"></script></body></html>
+</main><div class="contact-popover" id="contactPopover">
+  <button type="button" class="popover-close" id="contactClose" aria-label="Закрити">×</button>
+  <strong>Звʼязок</strong><a href="tel:+380973994532">📞 +380 97 399 45 32</a><a href="viber://chat?number=%2B380973994532">Viber</a><a target="_blank" href="https://wa.me/380973994532">WhatsApp</a><a target="_blank" href="https://www.instagram.com/makovetskiyoleksandr_?igsh=MTBsYXAzcGF2bHNsdA==&igsi=MTBsYXAzcGF2bHNsdA==">Instagram</a><a target="_blank" href="https://www.facebook.com/share/1ChEV5K8jn/?mibextid=wwXIfr">Facebook</a></div><div class="footer"><div class="container footer-grid"><div><div class="brand">dr.makovetskyi.com.ua</div><p>Лікар-хірург Маковецький Олександр Миколайович</p><small>Інформація на сайті не замінює консультацію лікаря.</small></div><div><b>Швидкі посилання</b><p><a href="#services">Послуги</a><br><a href="#patient">Важливо пацієнту</a><br><a href="#blog">Блог</a><br><a href="#reviews">Відгуки</a></p></div><div><b>Звʼязок</b><p><a href="tel:+380973994532">+380 97 399 45 32</a><br><a href="#contacts">Адреса та маршрут</a></p></div></div></div><div id="quizModal" class="contact-popover" style="left:50%;right:auto;transform:translateX(-50%);width:min(520px,92vw)"><button class="btn ghost" onclick="closeQuiz()">Закрити</button><h3 style="margin-top:14px">Схоже на грижу?</h3><div id="quizBody"></div></div><div
+  id="checklistModal"
+  class="contact-popover checklist-modal"
+  aria-hidden="true">
+
+  <button
+    type="button"
+    class="modal-close"
+    aria-label="Закрити"
+    onclick="closeChecklist()">×</button>
+
+  <h3>Чек-лист підготовки</h3>
+
+  <div
+    class="checklist"
+    id="checklistBody">
+  </div>
+
+  <button
+    class="btn checklist-print"
+    onclick="window.print()">
+    Друкувати
+  </button>
+
+</div>
+
+<script src="app.js"></script></body></html>
