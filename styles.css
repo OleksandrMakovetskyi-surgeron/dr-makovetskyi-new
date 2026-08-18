@@ -62,3 +62,6 @@
   max-height: 620px;
   object-fit: cover;
 }
+
+#blogImagePreviewWrap{border:1px solid var(--line);padding:8px;background:white}
+#blogImagePreview{display:block}

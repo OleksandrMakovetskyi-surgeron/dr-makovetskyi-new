@@ -82,30 +82,47 @@ async function editPost(id){
       </label>
 
       <label>Текст статті
-        <textarea id="blogContent" rows="16" placeholder="Пишіть текст вільно.
+        <textarea id="blogContent" rows="16" placeholder="Enter — новий рядок.
 
-Enter — новий рядок.
-
-Можна використовувати:
 1. Перший пункт
 2. Другий пункт
 
 • Маркований пункт
-• Ще один пункт
-
 ✓ Перевага
 — Примітка"></textarea>
       </label>
 
-      <p class="muted">Enter створює новий рядок. Можна використовувати 1., 2., 3., •, —, ✓ та інші звичайні символи.</p>
+      <p class="muted">Enter створює новий рядок. Можна використовувати 1., 2., 3., •, —, ✓ та інші символи.</p>
 
-      <label>URL фото / обкладинки
-        <input id="blogImage" placeholder="https://...">
-      </label>
+      <div class="admin-card" style="background:#f8faf7">
+        <h3>Фото статті / обкладинка</h3>
+        <label>Вибрати фото з комп’ютера
+          <input id="blogImageFile" type="file" accept="image/jpeg,image/png,image/webp">
+        </label>
+        <button type="button" class="btn light" id="blogImageUploadBtn">Завантажити фото</button>
+        <p id="blogImageUploadStatus" class="muted"></p>
 
-      <label>URL відео
-        <input id="blogVideo" placeholder="https://...">
-      </label>
+        <div id="blogImagePreviewWrap" style="display:none;margin-top:14px">
+          <img id="blogImagePreview" style="width:100%;max-height:360px;object-fit:cover;border-radius:8px">
+        </div>
+
+        <label style="margin-top:14px">URL фото
+          <input id="blogImage" placeholder="Заповнюється автоматично після завантаження">
+        </label>
+      </div>
+
+      <div class="admin-card" style="background:#f8faf7">
+        <h3>Відео статті</h3>
+        <label>Вибрати відео з комп’ютера
+          <input id="blogVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime">
+        </label>
+        <button type="button" class="btn light" id="blogVideoUploadBtn">Завантажити відео</button>
+        <p id="blogVideoUploadStatus" class="muted"></p>
+
+        <label style="margin-top:14px">URL відео
+          <input id="blogVideo" placeholder="Заповнюється автоматично після завантаження">
+        </label>
+      </div>
 
       <label class="check-row">
         <input id="blogPublished" type="checkbox">
@@ -113,11 +130,65 @@ Enter — новий рядок.
       </label>
 
       <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px">
-        <button type="button" class="btn" id="blogEditorSave">Зберегти</button>
+        <button type="button" class="btn" id="blogEditorSave">Зберегти статтю</button>
       </div>
     </div>`;
     document.body.appendChild(modal);
+
     blogEditorClose.onclick=()=>modal.classList.remove('active');
+
+    blogImageUploadBtn.onclick=async()=>{
+      const f=blogImageFile.files[0];
+      if(!f)return alert('Спочатку виберіть фото');
+
+      blogImageUploadStatus.textContent='Завантаження...';
+
+      const ext=(f.name.split('.').pop()||'jpg').toLowerCase();
+      const safeName=f.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+      const path=`blog/${Date.now()}-${safeName}`;
+
+      const upload=await db.storage.from('site-media').upload(path,f,{
+        cacheControl:'3600',
+        upsert:false,
+        contentType:f.type
+      });
+
+      if(upload.error){
+        blogImageUploadStatus.textContent='Помилка: '+upload.error.message;
+        return;
+      }
+
+      const {data:pub}=db.storage.from('site-media').getPublicUrl(path);
+      blogImage.value=pub.publicUrl;
+      blogImagePreview.src=pub.publicUrl;
+      blogImagePreviewWrap.style.display='block';
+      blogImageUploadStatus.textContent='Фото завантажено ✓';
+    };
+
+    blogVideoUploadBtn.onclick=async()=>{
+      const f=blogVideoFile.files[0];
+      if(!f)return alert('Спочатку виберіть відео');
+
+      blogVideoUploadStatus.textContent='Завантаження...';
+
+      const safeName=f.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+      const path=`blog-videos/${Date.now()}-${safeName}`;
+
+      const upload=await db.storage.from('site-media').upload(path,f,{
+        cacheControl:'3600',
+        upsert:false,
+        contentType:f.type
+      });
+
+      if(upload.error){
+        blogVideoUploadStatus.textContent='Помилка: '+upload.error.message;
+        return;
+      }
+
+      const {data:pub}=db.storage.from('site-media').getPublicUrl(path);
+      blogVideo.value=pub.publicUrl;
+      blogVideoUploadStatus.textContent='Відео завантажено ✓';
+    };
   }
 
   blogTitle.value=x.title||'';
@@ -126,6 +197,19 @@ Enter — новий рядок.
   blogImage.value=x.image_url||'';
   blogVideo.value=x.video_url||'';
   blogPublished.checked=!!x.published;
+  blogImageFile.value='';
+  blogVideoFile.value='';
+  blogImageUploadStatus.textContent='';
+  blogVideoUploadStatus.textContent='';
+
+  if(x.image_url){
+    blogImagePreview.src=x.image_url;
+    blogImagePreviewWrap.style.display='block';
+  }else{
+    blogImagePreviewWrap.style.display='none';
+    blogImagePreview.removeAttribute('src');
+  }
+
   modal.classList.add('active');
 
   blogEditorSave.onclick=async()=>{
