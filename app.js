@@ -13,8 +13,8 @@ function blogImgStyle(x,small=false){
   const fit=['contain','cover'].includes(x.image_fit)?x.image_fit:'contain';
   const pos=['center','top','bottom'].includes(x.image_position)?x.image_position:'center';
   const h=Number(x.image_height);
-  const height=small?110:(Number.isFinite(h)&&h>=180&&h<=900?h:420);
-  return `height:${height}px;object-fit:${fit};object-position:${pos};background:#f2f2ed;`;
+  const height=Number.isFinite(h)&&h>=180&&h<=900?h:420;
+  return `width:100%;height:${height}px;object-fit:${fit};object-position:${pos};background:#f2f2ed;display:block;`;
 }
 async function loadBlog(){
   const d=(await q('blog_posts'))

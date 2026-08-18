@@ -78,3 +78,14 @@
   width: 100%;
   display: block;
 }
+
+
+/* BLOG IMAGE SIZE FIX — selected CMS size must win */
+.blog-feature img,
+.blog-small img,
+.blog-article-media img,
+.blog-card img {
+  width: 100%;
+  max-height: none !important;
+  display: block;
+}
