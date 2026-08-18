@@ -19,3 +19,14 @@
 .seo-copy p,.seo-copy li{line-height:1.75}
 .seo-points{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 @media(max-width:800px){.seo-service-hero,.seo-points{grid-template-columns:1fr}.seo-service-hero img{height:380px}}
+
+
+/* FIX: preserve line breaks entered in CMS service descriptions */
+#services .service-description,
+#services .card p,
+.service-description {
+  white-space: pre-line !important;
+}
+
+.patient-tool-icon{font-size:28px;margin-bottom:14px}
+.patient-tool-actions{margin-top:auto}
