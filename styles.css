@@ -65,3 +65,16 @@
 
 #blogImagePreviewWrap{border:1px solid var(--line);padding:8px;background:white}
 #blogImagePreview{display:block}
+
+
+/* Public cleanup and blog image editor */
+.blog-feature img,
+.blog-small img,
+.blog-article-media img {
+  background: #f2f2ed;
+}
+
+#blogImagePreview {
+  width: 100%;
+  display: block;
+}

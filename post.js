@@ -28,6 +28,13 @@ async function loadPost(){
   if(data.image_url){
     postImage.src=data.image_url;
     postImage.alt=data.title||'Стаття';
+    const fit=['contain','cover'].includes(data.image_fit)?data.image_fit:'contain';
+    const pos=['center','top','bottom'].includes(data.image_position)?data.image_position:'center';
+    const h=Number(data.image_height);
+    postImage.style.objectFit=fit;
+    postImage.style.objectPosition=pos;
+    postImage.style.height=(Number.isFinite(h)&&h>=180&&h<=900?h:520)+'px';
+    postImage.style.background='#f2f2ed';
     postImageWrap.style.display='block';
   }
 

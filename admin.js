@@ -109,6 +109,34 @@ async function editPost(id){
         <label style="margin-top:14px">URL фото
           <input id="blogImage" placeholder="Заповнюється автоматично після завантаження">
         </label>
+
+        <div class="form-grid" style="margin-top:14px">
+          <label>Як показувати фото
+            <select id="blogImageFit">
+              <option value="contain">Показати повністю — без обрізання</option>
+              <option value="cover">Заповнити блок — можливе обрізання</option>
+            </select>
+          </label>
+
+          <label>Висота фото
+            <select id="blogImageHeight">
+              <option value="300">300 px — компактне</option>
+              <option value="420">420 px — стандартне</option>
+              <option value="520">520 px — велике</option>
+              <option value="650">650 px — дуже велике</option>
+            </select>
+          </label>
+
+          <label>Позиція кадру
+            <select id="blogImagePosition">
+              <option value="top">Верх</option>
+              <option value="center">Центр</option>
+              <option value="bottom">Низ</option>
+            </select>
+          </label>
+        </div>
+
+        <p class="muted">Для рекламних макетів і фото з текстом краще обирати «Показати повністю — без обрізання».</p>
       </div>
 
       <div class="admin-card" style="background:#f8faf7">
@@ -136,6 +164,20 @@ async function editPost(id){
     document.body.appendChild(modal);
 
     blogEditorClose.onclick=()=>modal.classList.remove('active');
+
+    function updateBlogImagePreview(){
+      const fit=blogImageFit?.value||'contain';
+      const h=Number(blogImageHeight?.value||420);
+      const pos=blogImagePosition?.value||'center';
+      blogImagePreview.style.objectFit=fit;
+      blogImagePreview.style.objectPosition=pos;
+      blogImagePreview.style.height=h+'px';
+      blogImagePreview.style.maxHeight='none';
+      blogImagePreview.style.background='#f2f2ed';
+    }
+    blogImageFit.onchange=updateBlogImagePreview;
+    blogImageHeight.onchange=updateBlogImagePreview;
+    blogImagePosition.onchange=updateBlogImagePreview;
 
     blogImageUploadBtn.onclick=async()=>{
       const f=blogImageFile.files[0];
@@ -195,6 +237,9 @@ async function editPost(id){
   blogSubtitle.value=x.subtitle||'';
   blogContent.value=x.content||'';
   blogImage.value=x.image_url||'';
+  blogImageFit.value=x.image_fit||'contain';
+  blogImageHeight.value=String(x.image_height||420);
+  blogImagePosition.value=x.image_position||'center';
   blogVideo.value=x.video_url||'';
   blogPublished.checked=!!x.published;
   blogImageFile.value='';
@@ -205,6 +250,7 @@ async function editPost(id){
   if(x.image_url){
     blogImagePreview.src=x.image_url;
     blogImagePreviewWrap.style.display='block';
+    updateBlogImagePreview();
   }else{
     blogImagePreviewWrap.style.display='none';
     blogImagePreview.removeAttribute('src');
@@ -227,6 +273,9 @@ async function editPost(id){
       subtitle:blogSubtitle.value,
       content:blogContent.value,
       image_url:blogImage.value,
+      image_fit:blogImageFit.value,
+      image_height:Number(blogImageHeight.value)||420,
+      image_position:blogImagePosition.value,
       video_url:blogVideo.value,
       published:blogPublished.checked,
       status:blogPublished.checked?'published':'draft'

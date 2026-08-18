@@ -9,6 +9,13 @@ async function loadDoctor(){const {data}=await db.from('doctor_profile').select(
 async function loadDirections(){const d=(await q('directions')).filter(x=>x.published!==false).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));directionsGrid.innerHTML=(d.length?d:[{title:'Лапароскопічна хірургія',icon:'01'},{title:'Хірургія гриж живота',icon:'02'},{title:'Проктологія',icon:'03'},{title:'Пластична хірургія',icon:'04'}]).map(x=>`<article class="card priority-card"><div class="icon">${esc(x.icon||'✦')}</div><div><h3>${esc(x.title)}</h3><p class="muted service-description">${esc(x.description||'')}</p></div></article>`).join('')}
 async function loadServices(){const d=(await q('services')).filter(x=>x.published!==false).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));servicesGrid.innerHTML=d.map(x=>`<article class="card media">${x.image_url?`<img src="${esc(x.image_url)}">`:''}<div class="body"><h3>${esc(x.title)}</h3><p class="muted service-description">${esc(x.description||'')}</p>${x.price?`<b>${esc(x.price)}</b>`:''}</div></article>`).join('')}
 async function loadEducation(){const d=(await q('education')).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));educationTimeline.innerHTML=(d.length?d:[{period:'2013–2017',title:'Білоцерківський медичний фаховий коледж'},{period:'2017–2022',title:'Полтавський державний медичний університет'},{period:'2022–2025',title:'Інтернатура з хірургії — НМУ ім. О.О. Богомольця'}]).map(x=>`<div class="timeline-row"><b>${esc(x.period||'')}</b><div><h3>${esc(x.title)}</h3><p class="muted service-description">${esc(x.description||'')}</p></div></div>`).join('')}
+function blogImgStyle(x,small=false){
+  const fit=['contain','cover'].includes(x.image_fit)?x.image_fit:'contain';
+  const pos=['center','top','bottom'].includes(x.image_position)?x.image_position:'center';
+  const h=Number(x.image_height);
+  const height=small?110:(Number.isFinite(h)&&h>=180&&h<=900?h:420);
+  return `height:${height}px;object-fit:${fit};object-position:${pos};background:#f2f2ed;`;
+}
 async function loadBlog(){
   const d=(await q('blog_posts'))
     .filter(x=>x.published===true)
@@ -24,7 +31,7 @@ async function loadBlog(){
 
   blogArea.innerHTML=`
     <article class="blog-feature">
-      ${f.image_url?`<a href="${fUrl}"><img src="${esc(f.image_url)}" alt="${esc(f.title)}"></a>`:''}
+      ${f.image_url?`<a href="${fUrl}"><img src="${esc(f.image_url)}" alt="${esc(f.title)}" style="${blogImgStyle(f)}"></a>`:''}
       <div class="body">
         <h3><a href="${fUrl}" class="plain-link">${esc(f.title)}</a></h3>
         <p class="blog-subtitle">${esc(f.subtitle||f.excerpt||'')}</p>
@@ -35,7 +42,7 @@ async function loadBlog(){
       ${r.slice(0,4).map(x=>{
         const url=`post.html?slug=${encodeURIComponent(x.slug||'')}`;
         return `<article class="blog-small">
-          ${x.image_url?`<a href="${url}"><img src="${esc(x.image_url)}" alt="${esc(x.title)}"></a>`:''}
+          ${x.image_url?`<a href="${url}"><img src="${esc(x.image_url)}" alt="${esc(x.title)}" style="${blogImgStyle(x,true)}"></a>`:''}
           <div>
             <h3><a href="${url}" class="plain-link">${esc(x.title)}</a></h3>
             <p class="muted blog-subtitle">${esc(x.subtitle||x.excerpt||'')}</p>

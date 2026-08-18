@@ -1,27 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://dr-makovetskyi-new.vercel.app/</loc>
-  </url>
-  <url>
-    <loc>https://dr-makovetskyi-new.vercel.app/pupkova-gryzha.html</loc>
-  </url>
-  <url>
-    <loc>https://dr-makovetskyi-new.vercel.app/pakhova-gryzha.html</loc>
-  </url>
-  <url>
-    <loc>https://dr-makovetskyi-new.vercel.app/zhovchnokamiana-khvoroba.html</loc>
-  </url>
-  <url>
-    <loc>https://dr-makovetskyi-new.vercel.app/laparoskopichna-khirurhiia.html</loc>
-  </url>
-  <url>
-    <loc>https://dr-makovetskyi-new.vercel.app/proktolohiia.html</loc>
-  </url>
-  <url>
-    <loc>https://dr-makovetskyi-new.vercel.app/aftercare.html</loc>
-  </url>
-  <url>
-    <loc>https://dr-makovetskyi-new.vercel.app/hospital-bag.html</loc>
-  </url>
+  <url><loc>https://dr-makovetskyi-new.vercel.app/</loc></url>
+  <url><loc>https://dr-makovetskyi-new.vercel.app/pupkova-gryzha.html</loc></url>
+  <url><loc>https://dr-makovetskyi-new.vercel.app/pakhova-gryzha.html</loc></url>
+  <url><loc>https://dr-makovetskyi-new.vercel.app/zhovchnokamiana-khvoroba.html</loc></url>
+  <url><loc>https://dr-makovetskyi-new.vercel.app/laparoskopichna-khirurhiia.html</loc></url>
+  <url><loc>https://dr-makovetskyi-new.vercel.app/proktolohiia.html</loc></url>
+  <url><loc>https://dr-makovetskyi-new.vercel.app/aftercare.html</loc></url>
+  <url><loc>https://dr-makovetskyi-new.vercel.app/hospital-bag.html</loc></url>
 </urlset>
