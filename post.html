@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Стаття — dr.makovetskyi.com.ua</title>
+  <meta name="description" content="">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html">dr.makovetskyi.com.ua</a>
+    <nav class="main-nav">
+      <a href="index.html">Головна</a>
+      <a href="index.html#services">Послуги</a>
+      <a href="index.html#blog">Блог</a>
+      <a href="index.html#contacts">Контакти</a>
+    </nav>
+    <a class="btn" href="index.html#appointment">Записатися</a>
+  </div>
+</header>
+
+<main class="section">
+  <article class="container seo-copy">
+    <a href="index.html#blog" class="eyebrow">← Назад до блогу</a>
+    <h1 id="postTitle" style="margin-top:18px"></h1>
+    <p id="postSubtitle" class="muted blog-subtitle" style="font-size:20px"></p>
+
+    <div id="postImageWrap" class="blog-article-media" style="display:none">
+      <img id="postImage" alt="">
+    </div>
+
+    <div id="postVideoWrap" class="blog-article-media" style="display:none">
+      <video id="postVideo" controls preload="metadata"></video>
+    </div>
+
+    <div id="postContent" class="blog-content"></div>
+  </article>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>Лікар-хірург Маковецький Олександр Миколайович</p>
+    <small>Матеріал має інформаційний характер і не замінює консультацію лікаря.</small>
+  </div>
+</footer>
+
+<script src="post.js"></script>
+</body>
+</html>

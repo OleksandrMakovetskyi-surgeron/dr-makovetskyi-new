@@ -47,7 +47,117 @@ async function editService(id){
   };
 }
 async function loadEducation(){await list('education',educationList,x=>`<div class="list-row"><div><b>${esc(x.period||'')}</b> — ${esc(x.title)}</div><button class="btn light" onclick="editEducation('${x.id}')">Редагувати</button></div>`)}async function editEducation(id){let x={};if(id)x=(await db.from('education').select('*').eq('id',id).single()).data||{};const period=prompt('Період:',x.period||'');if(period===null)return;const title=prompt('Заклад / етап:',x.title||'');const description=prompt('Опис:',x.description||'');const row={period,title,description,sort_order:x.sort_order||0};id?await db.from('education').update(row).eq('id',id):await db.from('education').insert(row);loadEducation()}
-async function loadBlog(){const {data}=await db.from('blog_posts').select('*').order('created_at',{ascending:false});blogList.innerHTML=(data||[]).map(x=>`<div class="list-row"><div><b>${esc(x.title)}</b><div class="muted">${x.published?'Опубліковано':'Чернетка'}</div></div><button class="btn light" onclick="editPost('${x.id}')">Редагувати</button></div>`).join('')}async function editPost(id){let x={};if(id)x=(await db.from('blog_posts').select('*').eq('id',id).single()).data||{};const title=prompt('Заголовок:',x.title||'');if(title===null)return;const subtitle=prompt('Підзаголовок:',x.subtitle||'');const content=prompt('Текст:',x.content||'');const image_url=prompt('URL обкладинки:',x.image_url||'');const video_url=prompt('URL відео:',x.video_url||'');const published=confirm('Опублікувати?');const slug=x.slug||title.toLowerCase().replace(/[^a-zа-яіїє0-9]+/gi,'-').replace(/^-|-$/g,'');const row={slug,title,subtitle,content,image_url,video_url,published,status:published?'published':'draft'};id?await db.from('blog_posts').update(row).eq('id',id):await db.from('blog_posts').insert(row);loadBlog()}
+async function loadBlog(){
+  const {data}=await db.from('blog_posts').select('*').order('created_at',{ascending:false});
+  blogList.innerHTML=(data||[]).map(x=>`<div class="list-row">
+    <div>
+      <b>${esc(x.title)}</b>
+      <div class="muted">${x.published?'Опубліковано':'Чернетка'}</div>
+    </div>
+    <button class="btn light" onclick="editPost('${x.id}')">Редагувати</button>
+  </div>`).join('');
+}
+
+async function editPost(id){
+  let x={};
+  if(id)x=(await db.from('blog_posts').select('*').eq('id',id).single()).data||{};
+
+  let modal=document.getElementById('blogEditorModal');
+  if(!modal){
+    modal=document.createElement('div');
+    modal.id='blogEditorModal';
+    modal.className='editor-overlay';
+    modal.innerHTML=`<div class="editor-dialog">
+      <div class="section-head">
+        <h2>Редагування статті</h2>
+        <button type="button" class="btn light" id="blogEditorClose">Закрити</button>
+      </div>
+
+      <label>Заголовок
+        <input id="blogTitle">
+      </label>
+
+      <label>Підзаголовок
+        <textarea id="blogSubtitle" rows="3" placeholder="Можна писати з нового рядка"></textarea>
+      </label>
+
+      <label>Текст статті
+        <textarea id="blogContent" rows="16" placeholder="Пишіть текст вільно.
+
+Enter — новий рядок.
+
+Можна використовувати:
+1. Перший пункт
+2. Другий пункт
+
+• Маркований пункт
+• Ще один пункт
+
+✓ Перевага
+— Примітка"></textarea>
+      </label>
+
+      <p class="muted">Enter створює новий рядок. Можна використовувати 1., 2., 3., •, —, ✓ та інші звичайні символи.</p>
+
+      <label>URL фото / обкладинки
+        <input id="blogImage" placeholder="https://...">
+      </label>
+
+      <label>URL відео
+        <input id="blogVideo" placeholder="https://...">
+      </label>
+
+      <label class="check-row">
+        <input id="blogPublished" type="checkbox">
+        Опублікувати статтю
+      </label>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px">
+        <button type="button" class="btn" id="blogEditorSave">Зберегти</button>
+      </div>
+    </div>`;
+    document.body.appendChild(modal);
+    blogEditorClose.onclick=()=>modal.classList.remove('active');
+  }
+
+  blogTitle.value=x.title||'';
+  blogSubtitle.value=x.subtitle||'';
+  blogContent.value=x.content||'';
+  blogImage.value=x.image_url||'';
+  blogVideo.value=x.video_url||'';
+  blogPublished.checked=!!x.published;
+  modal.classList.add('active');
+
+  blogEditorSave.onclick=async()=>{
+    const title=blogTitle.value.trim();
+    if(!title)return alert('Вкажіть заголовок');
+
+    const slug=x.slug || title
+      .toLowerCase()
+      .replace(/[^a-zа-яіїє0-9]+/gi,'-')
+      .replace(/^-|-$/g,'');
+
+    const row={
+      slug,
+      title,
+      subtitle:blogSubtitle.value,
+      content:blogContent.value,
+      image_url:blogImage.value,
+      video_url:blogVideo.value,
+      published:blogPublished.checked,
+      status:blogPublished.checked?'published':'draft'
+    };
+
+    const r=id
+      ? await db.from('blog_posts').update(row).eq('id',id)
+      : await db.from('blog_posts').insert(row);
+
+    if(r.error)return alert(r.error.message);
+
+    modal.classList.remove('active');
+    loadBlog();
+  };
+}
 mediaForm.onsubmit=async e=>{e.preventDefault();const f=mediaFile.files[0];const path=`${mediaKind.value}/${Date.now()}-${f.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;const up=await db.storage.from('site-media').upload(path,f);if(up.error)return alert(up.error.message);const url=db.storage.from('site-media').getPublicUrl(path).data.publicUrl;await db.from('media').insert({file_name:f.name,storage_path:path,public_url:url,alt_text:mediaAlt.value,kind:mediaKind.value});mediaForm.reset();loadMedia()};async function loadMedia(){const {data}=await db.from('media').select('*').order('created_at',{ascending:false});mediaList.innerHTML=(data||[]).map(x=>`<article class="card media"><img src="${esc(x.public_url||'')}" alt=""><div class="body"><span class="badge">${esc(x.kind||'')}</span><p>${esc(x.file_name||'')}</p></div></article>`).join('')}
 async function loadReviews(){const {data}=await db.from('reviews').select('*').order('created_at',{ascending:false});reviewsList.innerHTML=(data||[]).map(x=>`<div class="list-row"><div><b>${esc(x.name)}</b><div>${esc(x.text)}</div></div><button class="btn light" onclick="toggleReview('${x.id}',${!!x.published})">${x.published?'Приховати':'Опублікувати'}</button></div>`).join('')}async function toggleReview(id,p){await db.from('reviews').update({published:!p}).eq('id',id);loadReviews()}
 async function loadAppointments(){const {data}=await db.from('appointments').select('*').order('created_at',{ascending:false});appointmentsList.innerHTML=(data||[]).map(x=>`<div class="list-row"><div><b>${esc(x.name)} · ${esc(x.phone)}</b><div>${esc(x.direction||'')} · ${esc(x.callback_time||'')}</div><div class="muted">${esc(x.message||'')}</div></div><select onchange="updateAppointment('${x.id}',this.value)"><option ${x.status==='new'?'selected':''}>new</option><option ${x.status==='contacted'?'selected':''}>contacted</option><option ${x.status==='done'?'selected':''}>done</option></select></div>`).join('')}async function updateAppointment(id,status){await db.from('appointments').update({status}).eq('id',id)}

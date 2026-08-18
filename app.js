@@ -9,7 +9,42 @@ async function loadDoctor(){const {data}=await db.from('doctor_profile').select(
 async function loadDirections(){const d=(await q('directions')).filter(x=>x.published!==false).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));directionsGrid.innerHTML=(d.length?d:[{title:'Лапароскопічна хірургія',icon:'01'},{title:'Хірургія гриж живота',icon:'02'},{title:'Проктологія',icon:'03'},{title:'Пластична хірургія',icon:'04'}]).map(x=>`<article class="card priority-card"><div class="icon">${esc(x.icon||'✦')}</div><div><h3>${esc(x.title)}</h3><p class="muted service-description">${esc(x.description||'')}</p></div></article>`).join('')}
 async function loadServices(){const d=(await q('services')).filter(x=>x.published!==false).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));servicesGrid.innerHTML=d.map(x=>`<article class="card media">${x.image_url?`<img src="${esc(x.image_url)}">`:''}<div class="body"><h3>${esc(x.title)}</h3><p class="muted service-description">${esc(x.description||'')}</p>${x.price?`<b>${esc(x.price)}</b>`:''}</div></article>`).join('')}
 async function loadEducation(){const d=(await q('education')).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));educationTimeline.innerHTML=(d.length?d:[{period:'2013–2017',title:'Білоцерківський медичний фаховий коледж'},{period:'2017–2022',title:'Полтавський державний медичний університет'},{period:'2022–2025',title:'Інтернатура з хірургії — НМУ ім. О.О. Богомольця'}]).map(x=>`<div class="timeline-row"><b>${esc(x.period||'')}</b><div><h3>${esc(x.title)}</h3><p class="muted service-description">${esc(x.description||'')}</p></div></div>`).join('')}
-async function loadBlog(){const d=(await q('blog_posts')).filter(x=>x.published===true).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));if(!d.length){blogArea.innerHTML='<p>Статті скоро зʼявляться.</p>';return}const [f,...r]=d;blogArea.innerHTML=`<article class="blog-feature">${f.image_url?`<img src="${esc(f.image_url)}">`:''}<div class="body"><h3>${esc(f.title)}</h3><p>${esc(f.subtitle||f.excerpt||'')}</p></div></article><div class="blog-list">${r.slice(0,4).map(x=>`<article class="blog-small">${x.image_url?`<img src="${esc(x.image_url)}">`:''}<div><h3>${esc(x.title)}</h3><p class="muted">${esc(x.subtitle||x.excerpt||'')}</p></div></article>`).join('')}</div>`}
+async function loadBlog(){
+  const d=(await q('blog_posts'))
+    .filter(x=>x.published===true)
+    .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+
+  if(!d.length){
+    blogArea.innerHTML='<p>Статті скоро зʼявляться.</p>';
+    return;
+  }
+
+  const [f,...r]=d;
+  const fUrl=`post.html?slug=${encodeURIComponent(f.slug||'')}`;
+
+  blogArea.innerHTML=`
+    <article class="blog-feature">
+      ${f.image_url?`<a href="${fUrl}"><img src="${esc(f.image_url)}" alt="${esc(f.title)}"></a>`:''}
+      <div class="body">
+        <h3><a href="${fUrl}" class="plain-link">${esc(f.title)}</a></h3>
+        <p class="blog-subtitle">${esc(f.subtitle||f.excerpt||'')}</p>
+        <a class="btn ghost" href="${fUrl}">Читати статтю</a>
+      </div>
+    </article>
+    <div class="blog-list">
+      ${r.slice(0,4).map(x=>{
+        const url=`post.html?slug=${encodeURIComponent(x.slug||'')}`;
+        return `<article class="blog-small">
+          ${x.image_url?`<a href="${url}"><img src="${esc(x.image_url)}" alt="${esc(x.title)}"></a>`:''}
+          <div>
+            <h3><a href="${url}" class="plain-link">${esc(x.title)}</a></h3>
+            <p class="muted blog-subtitle">${esc(x.subtitle||x.excerpt||'')}</p>
+          </div>
+        </article>`;
+      }).join('')}
+    </div>`;
+}
+
 async function loadGallery(){const d=(await q('media')).filter(x=>x.kind==='gallery');galleryGrid.innerHTML=d.map(x=>x.public_url?`<img src="${esc(x.public_url)}" alt="${esc(x.alt_text||'')}">`:'').join('')}
 async function loadReviews(){const d=(await q('reviews')).filter(x=>x.published===true).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));reviewsGrid.innerHTML=d.map(x=>`<article class="review"><div class="stars">${'★'.repeat(x.rating||5)}</div><p>«${esc(x.text)}»</p><b>${esc(x.name)}</b></article>`).join('')||'<p>Відгуки ще не опубліковані.</p>'}
 async function loadVideoReviews(){const d=(await q('video_reviews')).filter(x=>x.published!==false);videoReviewsGrid.innerHTML=d.map(x=>`<div class="video-circle">${x.video_url?`<video controls preload="metadata" src="${esc(x.video_url)}"></video>`:`<img src="${esc(x.poster_url||'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80')}">`}<p>${esc(x.name||'Пацієнт')}</p></div>`).join('')||'<p>Відео-відгуки будуть додані після отримання згоди пацієнтів.</p>'}
