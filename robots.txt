@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
-Sitemap: https://dr.makovetskyi.com.ua/sitemap.xml
+
+Sitemap: https://dr-makovetskyi-new.vercel.app/sitemap.xml
