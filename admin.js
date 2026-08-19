@@ -291,8 +291,41 @@ async function editPost(id){
     loadBlog();
   };
 }
-mediaForm.onsubmit=async e=>{e.preventDefault();const f=mediaFile.files[0];const path=`${mediaKind.value}/${Date.now()}-${f.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;const up=await db.storage.from('site-media').upload(path,f);if(up.error)return alert(up.error.message);const url=db.storage.from('site-media').getPublicUrl(path).data.publicUrl;await db.from('media').insert({file_name:f.name,storage_path:path,public_url:url,alt_text:mediaAlt.value,kind:mediaKind.value});mediaForm.reset();loadMedia()};async function loadMedia(){const {data}=await db.from('media').select('*').order('created_at',{ascending:false});mediaList.innerHTML=(data||[]).map(x=>`<article class="card media"><img src="${esc(x.public_url||'')}" alt=""><div class="body"><span class="badge">${esc(x.kind||'')}</span><p>${esc(x.file_name||'')}</p></div></article>`).join('')}
-async function loadReviews(){const {data}=await db.from('reviews').select('*').order('created_at',{ascending:false});reviewsList.innerHTML=(data||[]).map(x=>`<div class="list-row"><div><b>${esc(x.name)}</b><div>${esc(x.text)}</div></div><button class="btn light" onclick="toggleReview('${x.id}',${!!x.published})">${x.published?'Приховати':'Опублікувати'}</button></div>`).join('')}async function toggleReview(id,p){await db.from('reviews').update({published:!p}).eq('id',id);loadReviews()}
+mediaForm.onsubmit=async e=>{e.preventDefault();const f=mediaFile.files[0];const path=`${mediaKind.value}/${Date.now()}-${f.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;const up=await db.storage.from('site-media').upload(path,f);if(up.error)return alert(up.error.message);const url=db.storage.from('site-media').getPublicUrl(path).data.publicUrl;await db.from('media').insert({file_name:f.name,storage_path:path,public_url:url,alt_text:mediaAlt.value,kind:mediaKind.value});mediaForm.reset();loadMedia()};async function loadMedia(){
+  const {data}=await db.from('media').select('*').order('created_at',{ascending:false});
+  mediaList.innerHTML=(data||[]).map(x=>{
+    const n=String(x.file_name||'').toLowerCase();
+    const u=String(x.public_url||'').toLowerCase().split('?')[0];
+    const isVideo=/\.(mp4|webm|mov|m4v|ogg)$/.test(n)||/\.(mp4|webm|mov|m4v|ogg)$/.test(u);
+    const preview=isVideo
+      ? `<video controls playsinline preload="metadata" src="${esc(x.public_url||'')}"></video>`
+      : `<img src="${esc(x.public_url||'')}" alt="${esc(x.alt_text||'')}">`;
+    return `<article class="card media">
+      ${preview}
+      <div class="body">
+        <span class="badge">${esc(x.kind||'')}</span>
+        <p>${esc(x.file_name||'')}</p>
+        <button class="btn danger" onclick="deleteMedia('${x.id}','${String(x.storage_path||'').replace(/'/g,"\\'")}')">Видалити</button>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+async function deleteMedia(id,storagePath){
+  if(!confirm('Видалити це фото або відео?')) return;
+
+  if(storagePath){
+    const r=await db.storage.from('site-media').remove([storagePath]);
+    if(r.error) console.warn('Storage delete:',r.error.message);
+  }
+
+  const q=await db.from('media').delete().eq('id',id);
+  if(q.error){
+    alert(q.error.message);
+    return;
+  }
+  loadMedia();
+}async function toggleReview(id,p){await db.from('reviews').update({published:!p}).eq('id',id);loadReviews()}
 async function loadAppointments(){const {data}=await db.from('appointments').select('*').order('created_at',{ascending:false});appointmentsList.innerHTML=(data||[]).map(x=>`<div class="list-row"><div><b>${esc(x.name)} · ${esc(x.phone)}</b><div>${esc(x.direction||'')} · ${esc(x.callback_time||'')}</div><div class="muted">${esc(x.message||'')}</div></div><select onchange="updateAppointment('${x.id}',this.value)"><option ${x.status==='new'?'selected':''}>new</option><option ${x.status==='contacted'?'selected':''}>contacted</option><option ${x.status==='done'?'selected':''}>done</option></select></div>`).join('')}async function updateAppointment(id,status){await db.from('appointments').update({status}).eq('id',id)}
 async function loadPatientDocs(){
   const {data}=await db.from('patient_resources').select('*').order('sort_order');

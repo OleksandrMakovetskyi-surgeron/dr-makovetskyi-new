@@ -52,4 +52,18 @@
 
 </div>
 
+
+<div id="galleryLightbox" class="gallery-lightbox" aria-hidden="true">
+  <button class="gallery-lightbox-close" type="button" onclick="closeGalleryLightbox()" aria-label="Закрити">×</button>
+  <button class="gallery-lightbox-nav gallery-lightbox-prev" type="button" onclick="galleryPrev()" aria-label="Попереднє">‹</button>
+  <div class="gallery-lightbox-inner">
+    <div id="galleryLightboxMedia" class="gallery-lightbox-media"></div>
+    <div class="gallery-lightbox-meta">
+      <span id="galleryLightboxCount"></span>
+      <span id="galleryLightboxCaption"></span>
+    </div>
+  </div>
+  <button class="gallery-lightbox-nav gallery-lightbox-next" type="button" onclick="galleryNext()" aria-label="Наступне">›</button>
+</div>
+
 <script src="app.js"></script></body></html>
