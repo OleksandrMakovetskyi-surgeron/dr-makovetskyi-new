@@ -175,14 +175,6 @@ async function editPost(id){
       blogImagePreview.style.maxHeight='none';
       blogImagePreview.style.background='#f2f2ed';
     }
-    blogImage.oninput=()=>{
-      const u=blogImage.value.trim();
-      if(u){
-        blogImagePreview.src=u;
-        blogImagePreviewWrap.style.display='block';
-        updateBlogImagePreview();
-      }
-    };
     blogImageFit.onchange=updateBlogImagePreview;
     blogImageHeight.onchange=updateBlogImagePreview;
     blogImagePosition.onchange=updateBlogImagePreview;

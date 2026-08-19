@@ -80,267 +80,31 @@
 }
 
 
-/* BLOG IMAGE SIZE FIX — selected CMS size must win */
-.blog-feature img,
-.blog-small img,
-.blog-article-media img,
-.blog-card img {
-  width: 100%;
-  max-height: none !important;
-  display: block;
-}
-
-
-/* ===== UI FIX: patient checklist modal ===== */
-.checklist-modal{
-  position:fixed !important;
-  left:50% !important;
-  right:auto !important;
-  top:50% !important;
-  bottom:auto !important;
-  transform:translate(-50%,-50%) !important;
-  width:min(680px,92vw) !important;
-  max-height:88vh;
-  overflow:auto;
-  padding:28px !important;
-  border-radius:12px;
-  box-shadow:0 24px 70px rgba(0,0,0,.22);
-  z-index:10000;
-}
-
-.checklist-modal h3{
-  margin:0 48px 22px 0;
-}
-
-.modal-close,
-.popover-close{
-  appearance:none;
-  border:0;
-  background:transparent;
-  color:var(--ink,#16211d);
-  font-size:34px;
-  line-height:1;
-  width:40px;
-  height:40px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  border-radius:999px;
-}
-
-.modal-close:hover,
-.popover-close:hover{
-  background:rgba(15,81,63,.08);
-}
-
-.modal-close{
-  position:absolute;
-  top:18px;
-  right:18px;
-}
-
-.checklist{
-  display:grid;
-  gap:0;
-}
-
-.checklist-row{
-  display:grid;
-  grid-template-columns:28px 1fr;
-  align-items:center;
-  gap:16px;
-  padding:16px 0;
-  border-bottom:1px solid rgba(22,33,29,.12);
-  cursor:pointer;
-}
-
-.checklist-row:last-child{
-  border-bottom:0;
-}
-
-.checklist-row input[type="checkbox"]{
-  width:22px;
-  height:22px;
+/* ===== Gallery photo + video support ===== */
+.gallery-masonry .gallery-item{
   margin:0;
-  justify-self:start;
+  break-inside:avoid;
+  overflow:hidden;
+  background:#fff;
+  border:1px solid var(--line,#d8ddd9);
 }
-
-.checklist-text{
-  text-align:left;
-  line-height:1.45;
-}
-
-.checklist-print{
+.gallery-masonry .gallery-item img,
+.gallery-masonry .gallery-item video{
   width:100%;
-  margin-top:22px;
-}
-
-/* ===== UI FIX: contact popover ===== */
-#contactPopover{
-  position:fixed;
-  right:24px;
-  top:92px;
-  width:min(330px,calc(100vw - 32px));
-  padding:24px !important;
-}
-
-#contactPopover .popover-close{
-  position:absolute;
-  top:10px;
-  right:10px;
-}
-
-#contactPopover > strong{
   display:block;
-  padding-right:44px;
-  margin-bottom:12px;
+  height:auto;
+  max-height:680px;
+  object-fit:contain;
+  background:#111;
 }
-
-@media (max-width:700px){
-  .checklist-modal{
-    width:94vw !important;
-    padding:22px !important;
-  }
-  #contactPopover{
-    right:12px;
-    top:78px;
-  }
+.gallery-masonry .gallery-item figcaption{
+  padding:10px 12px;
+  font-size:14px;
+  line-height:1.4;
 }
-
-/* print only checklist when requested */
-@media print{
-  body *{
-    visibility:hidden !important;
-  }
-  #checklistModal,
-  #checklistModal *{
-    visibility:visible !important;
-  }
-  #checklistModal{
-    position:absolute !important;
-    left:0 !important;
-    top:0 !important;
-    transform:none !important;
-    width:100% !important;
-    max-height:none !important;
-    box-shadow:none !important;
-  }
-  .modal-close,
-  .checklist-print{
-    display:none !important;
-  }
-}
-
-
-/* ===== FINAL UI ALIGNMENT FIX ===== */
-
-/* Contact panel */
-#contactPopover{
-  position:fixed !important;
-  right:24px !important;
-  top:92px !important;
-  bottom:auto !important;
-  width:min(340px,calc(100vw - 32px)) !important;
-  padding:26px 24px !important;
-  border-radius:10px;
-}
-#contactPopover .popover-close{
-  position:absolute;
-  right:12px;
-  top:10px;
-}
-#contactPopover > strong{
+.media video{
+  width:100%;
   display:block;
-  padding-right:44px;
-  margin-bottom:14px;
-}
-
-/* Checklist modal */
-.checklist-modal{
-  position:fixed !important;
-  left:50% !important;
-  top:50% !important;
-  right:auto !important;
-  bottom:auto !important;
-  transform:translate(-50%,-50%) !important;
-  width:min(720px,94vw) !important;
-  max-height:88vh !important;
-  overflow:auto !important;
-  padding:30px !important;
-  border-radius:12px !important;
-}
-.checklist-modal h3{
-  margin:0 52px 20px 0 !important;
-}
-.checklist-row{
-  display:grid !important;
-  grid-template-columns:28px minmax(0,1fr) !important;
-  align-items:center !important;
-  gap:16px !important;
-  padding:16px 0 !important;
-  border-bottom:1px solid rgba(22,33,29,.12) !important;
-  width:100% !important;
-}
-.checklist-row input[type="checkbox"]{
-  width:22px !important;
-  height:22px !important;
-  margin:0 !important;
-  padding:0 !important;
-  justify-self:start !important;
-}
-.checklist-text{
-  display:block !important;
-  width:100% !important;
-  text-align:left !important;
-  line-height:1.45 !important;
-}
-.checklist-print{
-  width:100% !important;
-  margin-top:22px !important;
-}
-
-/* Standalone patient pages */
-.patient-page{
-  min-height:100vh;
-  padding:70px 0 90px;
-}
-.patient-page .patient-page-card{
-  margin-top:30px;
-  padding:28px 34px;
-}
-.patient-page .patient-checklist{
-  display:grid;
-  gap:0;
-}
-.patient-page .patient-checklist .checklist-row{
-  grid-template-columns:28px 1fr !important;
-}
-.patient-page .patient-checklist .checklist-text{
-  font-size:16px;
-}
-.patient-page .patient-actions{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:24px;
-}
-.patient-page h1{
-  max-width:900px;
-}
-@media(max-width:700px){
-  #contactPopover{
-    right:12px !important;
-    top:78px !important;
-  }
-  .checklist-modal{
-    width:94vw !important;
-    padding:22px !important;
-  }
-  .patient-page{
-    padding-top:42px;
-  }
-  .patient-page .patient-page-card{
-    padding:22px;
-  }
+  max-height:260px;
+  background:#111;
 }

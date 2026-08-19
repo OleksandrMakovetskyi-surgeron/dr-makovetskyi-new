@@ -13,8 +13,8 @@ function blogImgStyle(x,small=false){
   const fit=['contain','cover'].includes(x.image_fit)?x.image_fit:'contain';
   const pos=['center','top','bottom'].includes(x.image_position)?x.image_position:'center';
   const h=Number(x.image_height);
-  const height=Number.isFinite(h)&&h>=180&&h<=900?h:420;
-  return `width:100%;height:${height}px;object-fit:${fit};object-position:${pos};background:#f2f2ed;display:block;`;
+  const height=small?110:(Number.isFinite(h)&&h>=180&&h<=900?h:420);
+  return `height:${height}px;object-fit:${fit};object-position:${pos};background:#f2f2ed;`;
 }
 async function loadBlog(){
   const d=(await q('blog_posts'))
@@ -52,7 +52,27 @@ async function loadBlog(){
     </div>`;
 }
 
-async function loadGallery(){const d=(await q('media')).filter(x=>x.kind==='gallery');galleryGrid.innerHTML=d.map(x=>x.public_url?`<img src="${esc(x.public_url)}" alt="${esc(x.alt_text||'')}">`:'').join('')}
+function isVideoMedia(x){
+  const n=String(x.file_name||'').toLowerCase();
+  const u=String(x.public_url||'').toLowerCase().split('?')[0];
+  return /\.(mp4|webm|mov|m4v|ogg)$/.test(n) || /\.(mp4|webm|mov|m4v|ogg)$/.test(u);
+}
+async function loadGallery(){
+  const d=(await q('media')).filter(x=>x.kind==='gallery');
+  galleryGrid.innerHTML=d.map(x=>{
+    if(!x.public_url)return '';
+    if(isVideoMedia(x)){
+      return `<figure class="gallery-item gallery-video">
+        <video controls playsinline preload="metadata" src="${esc(x.public_url)}"></video>
+        ${x.alt_text?`<figcaption>${esc(x.alt_text)}</figcaption>`:''}
+      </figure>`;
+    }
+    return `<figure class="gallery-item">
+      <img src="${esc(x.public_url)}" alt="${esc(x.alt_text||'Фото з практики')}" loading="lazy">
+      ${x.alt_text?`<figcaption>${esc(x.alt_text)}</figcaption>`:''}
+    </figure>`;
+  }).join('');
+}
 async function loadReviews(){const d=(await q('reviews')).filter(x=>x.published===true).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));reviewsGrid.innerHTML=d.map(x=>`<article class="review"><div class="stars">${'★'.repeat(x.rating||5)}</div><p>«${esc(x.text)}»</p><b>${esc(x.name)}</b></article>`).join('')||'<p>Відгуки ще не опубліковані.</p>'}
 async function loadVideoReviews(){const d=(await q('video_reviews')).filter(x=>x.published!==false);videoReviewsGrid.innerHTML=d.map(x=>`<div class="video-circle">${x.video_url?`<video controls preload="metadata" src="${esc(x.video_url)}"></video>`:`<img src="${esc(x.poster_url||'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80')}">`}<p>${esc(x.name||'Пацієнт')}</p></div>`).join('')||'<p>Відео-відгуки будуть додані після отримання згоди пацієнтів.</p>'}
 
@@ -82,43 +102,7 @@ async function loadTreatmentInfo(){
   if(!box)return;
   box.innerHTML=data.map(x=>`<a class="card" href="${esc(x.url||'#')}"><h3>${esc(x.title)}</h3><p class="muted">${esc(x.description||'')}</p></a>`).join('');
 }
-showPhone.onclick=()=>phoneReveal.style.display=phoneReveal.style.display==='none'?'block':'none';const contactClose=document.getElementById('contactClose');
-if(contactClose){
-  contactClose.onclick=(e)=>{
-    e.stopPropagation();
-    contactPopover.classList.remove('active');
-  };
-}
-
-contactBtn.onclick=()=>contactPopover.classList.toggle('active');medicalConsent.onchange=()=>baContent.style.display=medicalConsent.checked?'block':'none';document.querySelectorAll('[data-ba]').forEach(el=>{const inp=el.querySelector('input'),after=el.querySelector('.after'),line=el.querySelector('.ba-line');inp.oninput=()=>{after.style.clipPath=`inset(0 ${100-inp.value}% 0 0)`;line.style.left=inp.value+'%'}})
+showPhone.onclick=()=>phoneReveal.style.display=phoneReveal.style.display==='none'?'block':'none';contactBtn.onclick=()=>contactPopover.classList.toggle('active');medicalConsent.onchange=()=>baContent.style.display=medicalConsent.checked?'block':'none';document.querySelectorAll('[data-ba]').forEach(el=>{const inp=el.querySelector('input'),after=el.querySelector('.after'),line=el.querySelector('.ba-line');inp.oninput=()=>{after.style.clipPath=`inset(0 ${100-inp.value}% 0 0)`;line.style.left=inp.value+'%'}})
 reviewForm.onsubmit=async e=>{e.preventDefault();const r=await db.from('reviews').insert({name:rname.value.trim(),rating:+rating.value,text:rtext.value.trim(),published:false});alert(r.error?'Помилка':'Дякуємо! Відгук надіслано на модерацію.');if(!r.error)e.target.reset()}
 appointmentForm.onsubmit=async e=>{e.preventDefault();const r=await db.from('appointments').insert({name:aname.value.trim(),phone:aphone.value.trim(),message:amessage.value.trim(),callback_time:callbackTime.value,direction:direction.value,source_page:location.pathname,status:'new'});formMsg.textContent=r.error?'Помилка надсилання':'Заявку надіслано!';if(!r.error)e.target.reset()}
-const quizQs=['Чи є випинання в ділянці живота або паху?','Чи збільшується воно при кашлі або навантаженні?','Чи є біль або дискомфорт?','Чи зменшується випинання лежачи?'];let qi=0,yes=0;function openQuiz(){qi=0;yes=0;quizModal.classList.add('active');renderQuiz()}function closeQuiz(){quizModal.classList.remove('active')}function renderQuiz(){if(qi>=quizQs.length){quizBody.innerHTML=`<p>${yes>=2?'Є ознаки, які можуть відповідати грижі. Рекомендовано звернутися до хірурга для огляду.':'За відповідями явних ознак недостатньо, але при симптомах варто звернутися до лікаря.'}</p><a class="btn" href="#appointment" onclick="closeQuiz()">Залишити заявку</a>`;return}quizBody.innerHTML=`<p>${quizQs[qi]}</p><div style="display:flex;gap:10px"><button class="btn" onclick="answerQuiz(true)">Так</button><button class="btn ghost" onclick="answerQuiz(false)">Ні</button></div>`}function answerQuiz(v){if(v)yes++;qi++;renderQuiz()}function openChecklist(){
-  checklistModal.classList.add('active');
-  checklistModal.setAttribute('aria-hidden','false');
-  const items=[
-    'Паспорт / документ',
-    'Медичні документи та результати обстежень',
-    'Перелік ліків',
-    'Виконати рекомендації щодо їжі та води',
-    'Підготувати зручний одяг',
-    'Уточнити час госпіталізації'
-  ];
-  checklistBody.innerHTML=items.map(x=>`
-    <label class="checklist-row">
-      <input type="checkbox">
-      <span class="checklist-text">${x}</span>
-    </label>
-  `).join('');
-}
-function closeChecklist(){
-  checklistModal.classList.remove('active');
-  checklistModal.setAttribute('aria-hidden','true');
-}Promise.allSettled([loadSettings(),loadDoctor(),loadDirections(),loadServices(),loadEducation(),loadBlog(),loadGallery(),loadReviews(),loadVideoReviews(),loadPatientResources(),loadTreatmentInfo()]);
-document.addEventListener('click',(e)=>{
-  if(contactPopover?.classList.contains('active') &&
-     !contactPopover.contains(e.target) &&
-     !contactBtn.contains(e.target)){
-    contactPopover.classList.remove('active');
-  }
-});
+const quizQs=['Чи є випинання в ділянці живота або паху?','Чи збільшується воно при кашлі або навантаженні?','Чи є біль або дискомфорт?','Чи зменшується випинання лежачи?'];let qi=0,yes=0;function openQuiz(){qi=0;yes=0;quizModal.classList.add('active');renderQuiz()}function closeQuiz(){quizModal.classList.remove('active')}function renderQuiz(){if(qi>=quizQs.length){quizBody.innerHTML=`<p>${yes>=2?'Є ознаки, які можуть відповідати грижі. Рекомендовано звернутися до хірурга для огляду.':'За відповідями явних ознак недостатньо, але при симптомах варто звернутися до лікаря.'}</p><a class="btn" href="#appointment" onclick="closeQuiz()">Залишити заявку</a>`;return}quizBody.innerHTML=`<p>${quizQs[qi]}</p><div style="display:flex;gap:10px"><button class="btn" onclick="answerQuiz(true)">Так</button><button class="btn ghost" onclick="answerQuiz(false)">Ні</button></div>`}function answerQuiz(v){if(v)yes++;qi++;renderQuiz()}function openChecklist(){checklistModal.classList.add('active');const items=['Паспорт / документ','Медичні документи та результати обстежень','Перелік ліків','Виконати рекомендації щодо їжі та води','Підготувати зручний одяг','Уточнити час госпіталізації'];checklistBody.innerHTML=items.map(x=>`<label><input type="checkbox"> ${x}</label>`).join('')}function closeChecklist(){checklistModal.classList.remove('active')}Promise.allSettled([loadSettings(),loadDoctor(),loadDirections(),loadServices(),loadEducation(),loadBlog(),loadGallery(),loadReviews(),loadVideoReviews(),loadPatientResources(),loadTreatmentInfo()]);
