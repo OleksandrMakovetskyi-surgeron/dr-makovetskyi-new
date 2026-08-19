@@ -57,22 +57,130 @@ function isVideoMedia(x){
   const u=String(x.public_url||'').toLowerCase().split('?')[0];
   return /\.(mp4|webm|mov|m4v|ogg)$/.test(n) || /\.(mp4|webm|mov|m4v|ogg)$/.test(u);
 }
+
+let galleryItems=[];
+let galleryIndex=0;
+let galleryTouchStartX=null;
+
 async function loadGallery(){
-  const d=(await q('media')).filter(x=>x.kind==='gallery');
-  galleryGrid.innerHTML=d.map(x=>{
-    if(!x.public_url)return '';
+  galleryItems=(await q('media'))
+    .filter(x=>x.kind==='gallery' && x.public_url);
+
+  const grid=document.getElementById('galleryGrid');
+  if(!grid)return;
+
+  grid.innerHTML=galleryItems.map((x,i)=>{
     if(isVideoMedia(x)){
-      return `<figure class="gallery-item gallery-video">
-        <video controls playsinline preload="metadata" src="${esc(x.public_url)}"></video>
+      return `<figure class="gallery-item gallery-video" role="button" tabindex="0"
+        onclick="openGalleryItem(${i})"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openGalleryItem(${i})}">
+        <div class="gallery-thumb-wrap">
+          <video muted playsinline preload="metadata" src="${esc(x.public_url)}"></video>
+          <span class="gallery-play">▶</span>
+        </div>
         ${x.alt_text?`<figcaption>${esc(x.alt_text)}</figcaption>`:''}
       </figure>`;
     }
-    return `<figure class="gallery-item">
-      <img src="${esc(x.public_url)}" alt="${esc(x.alt_text||'Фото з практики')}" loading="lazy">
+
+    return `<figure class="gallery-item" role="button" tabindex="0"
+      onclick="openGalleryItem(${i})"
+      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openGalleryItem(${i})}">
+      <img src="${esc(x.public_url)}"
+           alt="${esc(x.alt_text||'Фото з практики')}"
+           loading="lazy">
       ${x.alt_text?`<figcaption>${esc(x.alt_text)}</figcaption>`:''}
     </figure>`;
   }).join('');
 }
+
+function renderGalleryLightbox(){
+  const x=galleryItems[galleryIndex];
+  const mediaBox=document.getElementById('galleryLightboxMedia');
+  const caption=document.getElementById('galleryLightboxCaption');
+  const count=document.getElementById('galleryLightboxCount');
+
+  if(!x||!mediaBox)return;
+
+  if(isVideoMedia(x)){
+    mediaBox.innerHTML=`<video controls autoplay playsinline preload="metadata" src="${esc(x.public_url)}"></video>`;
+  }else{
+    mediaBox.innerHTML=`<img src="${esc(x.public_url)}" alt="${esc(x.alt_text||'Фото з практики')}">`;
+  }
+
+  if(caption)caption.textContent=x.alt_text||'';
+  if(count)count.textContent=`${galleryIndex+1} / ${galleryItems.length}`;
+}
+
+function openGalleryItem(i){
+  if(!galleryItems.length)return;
+  galleryIndex=Math.max(0,Math.min(i,galleryItems.length-1));
+
+  const box=document.getElementById('galleryLightbox');
+  if(!box)return;
+
+  box.classList.add('active');
+  box.setAttribute('aria-hidden','false');
+  document.body.classList.add('gallery-open');
+  renderGalleryLightbox();
+}
+
+function closeGalleryLightbox(){
+  const box=document.getElementById('galleryLightbox');
+  if(!box)return;
+
+  box.classList.remove('active');
+  box.setAttribute('aria-hidden','true');
+  document.body.classList.remove('gallery-open');
+
+  const mediaBox=document.getElementById('galleryLightboxMedia');
+  if(mediaBox)mediaBox.innerHTML='';
+}
+
+function galleryPrev(){
+  if(!galleryItems.length)return;
+  galleryIndex=(galleryIndex-1+galleryItems.length)%galleryItems.length;
+  renderGalleryLightbox();
+}
+
+function galleryNext(){
+  if(!galleryItems.length)return;
+  galleryIndex=(galleryIndex+1)%galleryItems.length;
+  renderGalleryLightbox();
+}
+
+document.addEventListener('keydown',(e)=>{
+  const box=document.getElementById('galleryLightbox');
+  if(!box?.classList.contains('active'))return;
+
+  if(e.key==='Escape')closeGalleryLightbox();
+  else if(e.key==='ArrowLeft')galleryPrev();
+  else if(e.key==='ArrowRight')galleryNext();
+});
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const box=document.getElementById('galleryLightbox');
+  if(!box)return;
+
+  box.addEventListener('click',(e)=>{
+    if(e.target===box)closeGalleryLightbox();
+  });
+
+  box.addEventListener('touchstart',(e)=>{
+    galleryTouchStartX=e.changedTouches?.[0]?.clientX ?? null;
+  },{passive:true});
+
+  box.addEventListener('touchend',(e)=>{
+    if(galleryTouchStartX===null)return;
+    const endX=e.changedTouches?.[0]?.clientX ?? galleryTouchStartX;
+    const dx=endX-galleryTouchStartX;
+    galleryTouchStartX=null;
+
+    if(Math.abs(dx)<45)return;
+    if(dx<0)galleryNext();
+    else galleryPrev();
+  },{passive:true});
+});
+
 async function loadReviews(){const d=(await q('reviews')).filter(x=>x.published===true).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));reviewsGrid.innerHTML=d.map(x=>`<article class="review"><div class="stars">${'★'.repeat(x.rating||5)}</div><p>«${esc(x.text)}»</p><b>${esc(x.name)}</b></article>`).join('')||'<p>Відгуки ще не опубліковані.</p>'}
 async function loadVideoReviews(){const d=(await q('video_reviews')).filter(x=>x.published!==false);videoReviewsGrid.innerHTML=d.map(x=>`<div class="video-circle">${x.video_url?`<video controls preload="metadata" src="${esc(x.video_url)}"></video>`:`<img src="${esc(x.poster_url||'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80')}">`}<p>${esc(x.name||'Пацієнт')}</p></div>`).join('')||'<p>Відео-відгуки будуть додані після отримання згоди пацієнтів.</p>'}
 

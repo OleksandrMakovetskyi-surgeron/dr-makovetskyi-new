@@ -226,3 +226,42 @@
   .gallery-lightbox-next{right:18px}
   .gallery-lightbox-meta{padding-bottom:62px}
 }
+
+
+/* REAL FIX — gallery opening and browsing */
+body.gallery-open{
+  overflow:hidden;
+}
+
+.gallery-item{
+  cursor:zoom-in !important;
+}
+
+.gallery-thumb-wrap{
+  position:relative;
+}
+
+.gallery-lightbox{
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.gallery-lightbox-media{
+  min-width:0;
+  min-height:0;
+}
+
+.gallery-lightbox-media img,
+.gallery-lightbox-media video{
+  max-width:min(1200px,92vw) !important;
+  max-height:84vh !important;
+  object-fit:contain !important;
+}
+
+@media(max-width:700px){
+  .gallery-lightbox-media img,
+  .gallery-lightbox-media video{
+    max-width:96vw !important;
+    max-height:76vh !important;
+  }
+}
