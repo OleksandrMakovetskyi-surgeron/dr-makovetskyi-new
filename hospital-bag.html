@@ -1,1 +1,32 @@
-<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Що взяти в лікарню</title><link rel="stylesheet" href="styles.css"></head><body><main class="container section"><span class="eyebrow">Для пацієнта</span><h1>Що взяти з собою в лікарню</h1><div class="card checklist" style="margin-top:28px"><label><input type="checkbox"> Паспорт / документ</label><label><input type="checkbox"> Медичні документи й результати аналізів</label><label><input type="checkbox"> Перелік постійних ліків</label><label><input type="checkbox"> Зручний одяг і взуття</label><label><input type="checkbox"> Засоби гігієни</label><button class="btn" onclick="window.print()" style="margin-top:18px">Друкувати список</button></div></main></body></html>
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Що взяти з собою в лікарню</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="patient-page">
+  <div class="container">
+    <span class="eyebrow">Для пацієнта</span>
+    <h1>Що взяти з собою в лікарню</h1>
+
+    <div class="card patient-page-card">
+      <div class="patient-checklist">
+        <label class="checklist-row"><input type="checkbox"><span class="checklist-text">Паспорт / документ</span></label>
+        <label class="checklist-row"><input type="checkbox"><span class="checklist-text">Медичні документи й результати аналізів</span></label>
+        <label class="checklist-row"><input type="checkbox"><span class="checklist-text">Перелік постійних ліків</span></label>
+        <label class="checklist-row"><input type="checkbox"><span class="checklist-text">Зручний одяг і взуття</span></label>
+        <label class="checklist-row"><input type="checkbox"><span class="checklist-text">Засоби гігієни</span></label>
+      </div>
+
+      <div class="patient-actions">
+        <button class="btn" onclick="window.print()">Друкувати список</button>
+        <a class="btn ghost" href="index.html#patient">Назад на сайт</a>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

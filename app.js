@@ -86,11 +86,39 @@ showPhone.onclick=()=>phoneReveal.style.display=phoneReveal.style.display==='non
 if(contactClose){
   contactClose.onclick=(e)=>{
     e.stopPropagation();
-    contactPopover.classList.remove('open');
+    contactPopover.classList.remove('active');
   };
 }
 
 contactBtn.onclick=()=>contactPopover.classList.toggle('active');medicalConsent.onchange=()=>baContent.style.display=medicalConsent.checked?'block':'none';document.querySelectorAll('[data-ba]').forEach(el=>{const inp=el.querySelector('input'),after=el.querySelector('.after'),line=el.querySelector('.ba-line');inp.oninput=()=>{after.style.clipPath=`inset(0 ${100-inp.value}% 0 0)`;line.style.left=inp.value+'%'}})
 reviewForm.onsubmit=async e=>{e.preventDefault();const r=await db.from('reviews').insert({name:rname.value.trim(),rating:+rating.value,text:rtext.value.trim(),published:false});alert(r.error?'Помилка':'Дякуємо! Відгук надіслано на модерацію.');if(!r.error)e.target.reset()}
 appointmentForm.onsubmit=async e=>{e.preventDefault();const r=await db.from('appointments').insert({name:aname.value.trim(),phone:aphone.value.trim(),message:amessage.value.trim(),callback_time:callbackTime.value,direction:direction.value,source_page:location.pathname,status:'new'});formMsg.textContent=r.error?'Помилка надсилання':'Заявку надіслано!';if(!r.error)e.target.reset()}
-const quizQs=['Чи є випинання в ділянці живота або паху?','Чи збільшується воно при кашлі або навантаженні?','Чи є біль або дискомфорт?','Чи зменшується випинання лежачи?'];let qi=0,yes=0;function openQuiz(){qi=0;yes=0;quizModal.classList.add('active');renderQuiz()}function closeQuiz(){quizModal.classList.remove('active')}function renderQuiz(){if(qi>=quizQs.length){quizBody.innerHTML=`<p>${yes>=2?'Є ознаки, які можуть відповідати грижі. Рекомендовано звернутися до хірурга для огляду.':'За відповідями явних ознак недостатньо, але при симптомах варто звернутися до лікаря.'}</p><a class="btn" href="#appointment" onclick="closeQuiz()">Залишити заявку</a>`;return}quizBody.innerHTML=`<p>${quizQs[qi]}</p><div style="display:flex;gap:10px"><button class="btn" onclick="answerQuiz(true)">Так</button><button class="btn ghost" onclick="answerQuiz(false)">Ні</button></div>`}function answerQuiz(v){if(v)yes++;qi++;renderQuiz()}function openChecklist(){checklistModal.classList.add('active');const items=['Паспорт / документ','Медичні документи та результати обстежень','Перелік ліків','Виконати рекомендації щодо їжі та води','Підготувати зручний одяг','Уточнити час госпіталізації'];checklistBody.innerHTML=items.map(x=>`<label><input type="checkbox"> ${x}</label>`).join('')}function closeChecklist(){checklistModal.classList.remove('active')}Promise.allSettled([loadSettings(),loadDoctor(),loadDirections(),loadServices(),loadEducation(),loadBlog(),loadGallery(),loadReviews(),loadVideoReviews(),loadPatientResources(),loadTreatmentInfo()]);
+const quizQs=['Чи є випинання в ділянці живота або паху?','Чи збільшується воно при кашлі або навантаженні?','Чи є біль або дискомфорт?','Чи зменшується випинання лежачи?'];let qi=0,yes=0;function openQuiz(){qi=0;yes=0;quizModal.classList.add('active');renderQuiz()}function closeQuiz(){quizModal.classList.remove('active')}function renderQuiz(){if(qi>=quizQs.length){quizBody.innerHTML=`<p>${yes>=2?'Є ознаки, які можуть відповідати грижі. Рекомендовано звернутися до хірурга для огляду.':'За відповідями явних ознак недостатньо, але при симптомах варто звернутися до лікаря.'}</p><a class="btn" href="#appointment" onclick="closeQuiz()">Залишити заявку</a>`;return}quizBody.innerHTML=`<p>${quizQs[qi]}</p><div style="display:flex;gap:10px"><button class="btn" onclick="answerQuiz(true)">Так</button><button class="btn ghost" onclick="answerQuiz(false)">Ні</button></div>`}function answerQuiz(v){if(v)yes++;qi++;renderQuiz()}function openChecklist(){
+  checklistModal.classList.add('active');
+  checklistModal.setAttribute('aria-hidden','false');
+  const items=[
+    'Паспорт / документ',
+    'Медичні документи та результати обстежень',
+    'Перелік ліків',
+    'Виконати рекомендації щодо їжі та води',
+    'Підготувати зручний одяг',
+    'Уточнити час госпіталізації'
+  ];
+  checklistBody.innerHTML=items.map(x=>`
+    <label class="checklist-row">
+      <input type="checkbox">
+      <span class="checklist-text">${x}</span>
+    </label>
+  `).join('');
+}
+function closeChecklist(){
+  checklistModal.classList.remove('active');
+  checklistModal.setAttribute('aria-hidden','true');
+}Promise.allSettled([loadSettings(),loadDoctor(),loadDirections(),loadServices(),loadEducation(),loadBlog(),loadGallery(),loadReviews(),loadVideoReviews(),loadPatientResources(),loadTreatmentInfo()]);
+document.addEventListener('click',(e)=>{
+  if(contactPopover?.classList.contains('active') &&
+     !contactPopover.contains(e.target) &&
+     !contactBtn.contains(e.target)){
+    contactPopover.classList.remove('active');
+  }
+});
